@@ -1,5 +1,5 @@
 {
-  "name": "ciao",
+  "name": "caio",
   "private": true,
   "type": "module",
   "imports": {
@@ -31,7 +31,7 @@
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
     "@tanstack/react-router-ssr-query": "latest",
-    "@tanstack/react-start": "latest",
+    "@tanstack/react-start": "1.168.60",
     "@tanstack/react-store": "latest",
     "@tanstack/router-plugin": "^1.132.0",
     "@tanstack/store": "latest",
