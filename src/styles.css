@@ -366,55 +366,56 @@ a {
    Scoped under .lp so it never touches the teal app theme.
    ============================================================ */
 .lp {
-  --paper: #fbf6ec;
-  --paper-2: #f3ead8;
-  --card: #fffcf6;
-  --ink: #221d18;
-  --ink-soft: #6e6357;
-  --line: #e7dcc8;
-  --sky: #bad8ee;
+  /* Revižor brand palette: Gold · Navy · Teal */
+  --paper: #fffbee;
+  --paper-2: #fff3c4;
+  --card: #ffffff;
+  --ink: #1A2B5C;
+  --ink-soft: #3d5080;
+  --line: #e6d89a;
+  --sky: #FFC400;
 
-  --c-sky: #cfe4f4;
-  --c-sky-ink: #1b3a52;
-  --c-mint: #c8e7d2;
-  --c-mint-ink: #1e4534;
-  --c-butter: #f6e6a2;
-  --c-butter-ink: #5a4a12;
-  --c-peach: #f7d3bb;
-  --c-peach-ink: #663a22;
-  --c-lilac: #ded4f0;
-  --c-lilac-ink: #3a2a5c;
+  --c-sky: #fff3c4;
+  --c-sky-ink: #1A2B5C;
+  --c-mint: #d4f0e4;
+  --c-mint-ink: #0d3d26;
+  --c-butter: #FFC400;
+  --c-butter-ink: #1A2B5C;
+  --c-peach: #ffe4b0;
+  --c-peach-ink: #5a3200;
+  --c-lilac: #dce8ff;
+  --c-lilac-ink: #1A2B5C;
 
-  --flag: #e8663f;
-  --good: #2fa36b;
-  --warn: #dfa028;
+  --flag: #048058;
+  --good: #048058;
+  --warn: #c97800;
 
-  --lp-shadow: 0 26px 55px -22px rgba(70, 52, 28, 0.42), 0 8px 20px -10px rgba(70, 52, 28, 0.24);
-  --lp-shadow-sm: 0 12px 26px -16px rgba(70, 52, 28, 0.36);
+  --lp-shadow: 0 26px 55px -22px rgba(26, 43, 92, 0.32), 0 8px 20px -10px rgba(26, 43, 92, 0.18);
+  --lp-shadow-sm: 0 12px 26px -16px rgba(26, 43, 92, 0.24);
 
   background: var(--paper);
   color: var(--ink);
 }
 
 .dark .lp {
-  --paper: #141821;
-  --paper-2: #1b2028;
-  --card: #1f2530;
-  --ink: #f3ecdd;
-  --ink-soft: #aba090;
-  --line: #2c3341;
-  --sky: #2c405a;
+  --paper: #0d1220;
+  --paper-2: #131929;
+  --card: #1a2235;
+  --ink: #FFC400;
+  --ink-soft: #c8a800;
+  --line: #2a3550;
+  --sky: #1A2B5C;
 
-  --c-sky: #26394d;
-  --c-sky-ink: #d6e8f6;
-  --c-mint: #23402f;
-  --c-mint-ink: #cceadb;
-  --c-butter: #3f3618;
-  --c-butter-ink: #f7e7a6;
-  --c-peach: #43301f;
-  --c-peach-ink: #f8d9c3;
-  --c-lilac: #2e2647;
-  --c-lilac-ink: #e2d8f3;
+  --c-sky: #1a2b4a;
+  --c-sky-ink: #FFC400;
+  --c-mint: #0d2e1e;
+  --c-mint-ink: #a8f0cc;
+  --c-butter: #2a2000;
+  --c-butter-ink: #FFC400;
+  --c-peach: #2e1c00;
+  --c-peach-ink: #ffd580;
+  --c-lilac: #1a2440;
+  --c-lilac-ink: #c8d8ff;
 
   --lp-shadow: 0 26px 55px -22px rgba(0, 0, 0, 0.6), 0 8px 20px -10px rgba(0, 0, 0, 0.5);
   --lp-shadow-sm: 0 12px 26px -16px rgba(0, 0, 0, 0.55);
@@ -443,34 +444,36 @@ a {
 /* The hero art is a permanently-daylight paper sky, so the hero stays on the
    light palette in both themes — otherwise dark-mode text washes out over it. */
 .lp-hero {
-  --paper: #fbf6ec;
-  --paper-2: #f3ead8;
-  --card: #fffcf6;
-  --ink: #221d18;
-  --ink-soft: #5a5347;
-  --line: #e7dcc8;
-  --c-sky: #cfe4f4;
-  --c-sky-ink: #17384f;
-  --c-mint: #c8e7d2;
-  --c-mint-ink: #1e4534;
-  --c-lilac-ink: #3a2a5c;
-  --flag: #e8663f;
-  --good: #2fa36b;
+  /* Hero stays on the light palette so the sky art reads cleanly */
+  --paper: #fffbee;
+  --paper-2: #fff3c4;
+  --card: #ffffff;
+  --ink: #1A2B5C;
+  --ink-soft: #3d5080;
+  --line: #e6d89a;
+  --c-sky: #fff3c4;
+  --c-sky-ink: #1A2B5C;
+  --c-mint: #d4f0e4;
+  --c-mint-ink: #0d3d26;
+  --c-lilac-ink: #1A2B5C;
+  --flag: #048058;
+  --good: #048058;
 }
 
 /* Permanently-dark zone (footer, dark pricing card). Fixed espresso ground +
    light ink in BOTH themes, so hardcoded light text never lands on a light
    background when the app flips to dark mode. */
 .lp-ink {
-  --paper: #17120d;
-  --paper-2: #201812;
-  --card: #241b13;
-  --ink: #f5efe2;
-  --ink-soft: #a89d8a;
-  --line: rgba(245, 239, 226, 0.14);
-  --c-butter: #f6e6a2; /* accent stays light on this permanently-dark ground */
-  background: #17120d;
-  color: #f5efe2;
+  /* Permanently-dark zone — Revižor navy ground, gold text */
+  --paper: #0d1220;
+  --paper-2: #131929;
+  --card: #1a2235;
+  --ink: #FFC400;
+  --ink-soft: #8fa3cc;
+  --line: rgba(255, 196, 0, 0.14);
+  --c-butter: #FFC400; /* accent stays gold on this permanently-dark ground */
+  background: #1A2B5C;
+  color: #FFC400;
 }
 
 /* ---- parallax ---- */
