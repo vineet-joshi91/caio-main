@@ -514,41 +514,36 @@ function LandingPage() {
           <div className="mx-auto mb-14 max-w-[720px] text-center">
             <p className="lp-rise lp-kick">Invite-only access</p>
             <h2 className="lp-rise mt-3 text-[clamp(2rem,4.2vw,3.3rem)] leading-[1.05]">
-              Your first report is free. Then pay per report — nothing else.
+              Start free. Scale when you're ready.
             </h2>
             <p className="lp-rise mt-4 text-[1.1rem]" style={{ color: 'var(--ink-soft)' }}>
-              CAIO is currently available by invite only. No subscriptions, no seats, no surprises —
-              the advisor and your workspaces stay free; you only pay when you generate a report.
+              CAIO is currently available by invite only. The advisor and your workspaces are always free —
+              no subscriptions, no seats, no surprises.
             </p>
           </div>
           <div className="mx-auto grid max-w-[840px] gap-6 md:grid-cols-2">
             <div className="lp-rise lp-mock lp-halftone p-8" style={{ color: 'var(--ink)' }}>
-              <p className="lp-kick">Free</p>
-              <div className="lp-serif my-2.5 text-[3rem] leading-none">
-                ₹0<span className="lp-kick text-[0.8rem] opacity-60"> / to start</span>
-              </div>
+              <p className="lp-kick">Start free</p>
+              <h3 className="lp-serif my-2.5 text-[2rem] leading-tight">Your first report, on us.</h3>
               <p className="text-[0.95rem]" style={{ color: 'var(--ink-soft)' }}>
-                Upload your documents, meet the advisor, and run your first full scored report on us.
+                Upload your documents, meet the advisor, and run your first full scored report — no payment details needed.
               </p>
               <ul className="my-6 grid gap-2.5 text-[0.92rem]">
                 {['First business report included', 'Citation-backed advisor & memory', 'Write documents on the platform', 'Private isolated workspaces'].map((f) => (
                   <li key={f}><span className="lp-flag font-bold">→ </span>{f}</li>
                 ))}
               </ul>
-              <Link to="/onboarding" className="lp-btn lp-btn-primary no-underline">Request your invite</Link>
+              <Link to="/onboarding" className="lp-btn no-underline" style={{ background: 'var(--sky)', color: 'var(--ink)', fontWeight: 700 }}>Try once for free</Link>
             </div>
             <div className="lp-rise lp-ink lp-mock lp-halftone p-8">
               <p className="lp-kick" style={{ color: 'var(--c-butter)' }}>Report pack</p>
-              <div className="lp-serif my-2.5 text-[3rem] leading-none">
-                ₹799<span className="lp-kick text-[0.8rem] opacity-60"> / 10 reports</span>
-              </div>
+              <h3 className="lp-serif my-2.5 text-[2rem] leading-tight" style={{ color: 'var(--c-butter)' }}>Keep the momentum going.</h3>
               <p className="text-[0.95rem]" style={{ color: 'var(--ink-soft)' }}>
-                That's ₹80 a report — a board-grade audit for less than lunch. Buy a pack when you
-                need it, straight from the app.
+                When one report turns into a habit, grab a pack from inside the app — no subscriptions, no seats, no lock-in.
               </p>
               <ul className="my-6 grid gap-2.5 text-[0.92rem]">
                 {[
-                  '10 full scored reports',
+                  'Full scored reports, on demand',
                   'Every report covers revenue + 6 more factors',
                   'Escalate to a Revižor engagement when the diagnosis calls for it',
                   'UPI, cards & netbanking via Razorpay',
@@ -556,7 +551,7 @@ function LandingPage() {
                   <li key={f}><span className="font-bold" style={{ color: 'var(--c-butter)' }}>→ </span>{f}</li>
                 ))}
               </ul>
-              <Link to="/onboarding" className="lp-btn lp-btn-accent no-underline">Request your invite</Link>
+              <Link to="/onboarding" className="lp-btn no-underline" style={{ background: 'var(--sky)', color: 'var(--ink)', fontWeight: 700 }}>Request your invite</Link>
             </div>
           </div>
         </div>
