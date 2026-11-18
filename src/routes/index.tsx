@@ -74,6 +74,34 @@ function scoreColor(v: number) {
   return v >= 75 ? 'var(--good)' : v >= 60 ? 'var(--warn)' : 'var(--flag)'
 }
 
+type FooterCol = { label: string; href: string }
+
+const FOOTER_COLS: Array<[string, FooterCol[]]> = [
+  [
+    'Product',
+    [
+      { label: 'How it works', href: '#how' },
+      { label: 'The advisor', href: '#advisor' },
+      { label: 'What you get', href: '#bento' },
+      { label: 'Pricing', href: '#pricing' },
+    ],
+  ],
+  [
+    'Company',
+    [
+      { label: 'About Revižor', href: 'https://revizorbyje.com/about' },
+      { label: 'Contact', href: 'https://revizorbyje.com/contact' },
+    ],
+  ],
+  [
+    'Start',
+    [
+      { label: 'Request an invite', href: '/onboarding' },
+      { label: 'Sign in', href: '/app' },
+    ],
+  ],
+]
+
 function LandingPage() {
   const { isAuthenticated } = useConvexAuth()
   const appHref = isAuthenticated ? '/app' : '/onboarding'
@@ -167,7 +195,7 @@ function LandingPage() {
                 <ThemeToggle />
                 <Link to={appHref} className="lp-btn lp-btn-accent no-underline">
                   <UploadCloud size={17} />
-                  Analyze my company
+                  Request your invite
                 </Link>
               </div>
             </nav>
@@ -199,7 +227,7 @@ function LandingPage() {
           </p>
           <div className="lp-rise mt-8 flex flex-wrap justify-center gap-3.5">
             <Link to="/onboarding" className="lp-btn lp-btn-primary no-underline">
-              <UploadCloud size={19} /> Analyze my company
+              <UploadCloud size={19} /> Request your invite
             </Link>
             <a className="lp-btn lp-btn-ghost no-underline font-bold" href="#how">
               See how it works <ArrowRight className="lp-arw" size={17} />
@@ -410,7 +438,7 @@ function LandingPage() {
               Can we afford to hire two engineers this quarter?
             </div>
             <div className="lp-kick my-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.62rem]" style={{ background: 'var(--paper-2)', color: 'var(--ink-soft)' }}>
-              <Search size={12} /> searchDocuments · “runway hiring budget”
+              <Search size={12} /> searchDocuments · "runway hiring budget"
             </div>
             <div className="max-w-[92%] rounded-[16px_16px_16px_4px] border px-4 py-3.5 text-[0.9rem] leading-relaxed" style={{ background: 'var(--paper)', borderColor: 'var(--line)' }}>
               Not both at once. Your <b style={{ color: 'var(--flag)' }}>2025-budget.xlsx</b> shows 11
@@ -470,8 +498,8 @@ function LandingPage() {
         <div className="lp-wrap">
           <div className="lp-rise mx-auto max-w-[840px] px-4 text-center">
             <p className="lp-serif text-[clamp(1.6rem,3.4vw,2.5rem)] italic leading-[1.28]">
-              “It's the only tool that gives me advice I can actually check — every answer points at
-              the file it came from.”
+              "It's the only tool that gives me advice I can actually check — every answer points at
+              the file it came from."
             </p>
             <p className="lp-kick mt-6 text-[0.72rem]" style={{ color: 'var(--ink-soft)' }}>
               — Operator · seed-stage hardware company
@@ -484,13 +512,13 @@ function LandingPage() {
       <section id="pricing" className="py-24" style={{ background: 'var(--paper-2)' }}>
         <div className="lp-wrap">
           <div className="mx-auto mb-14 max-w-[720px] text-center">
-            <p className="lp-rise lp-kick">Simple, honest pricing</p>
+            <p className="lp-rise lp-kick">Invite-only access</p>
             <h2 className="lp-rise mt-3 text-[clamp(2rem,4.2vw,3.3rem)] leading-[1.05]">
               Your first report is free. Then pay per report — nothing else.
             </h2>
             <p className="lp-rise mt-4 text-[1.1rem]" style={{ color: 'var(--ink-soft)' }}>
-              No subscriptions, no seats, no surprises. The advisor, memory, and your workspaces stay
-              free — you only pay when you generate a report.
+              CAIO is currently available by invite only. No subscriptions, no seats, no surprises —
+              the advisor and your workspaces stay free; you only pay when you generate a report.
             </p>
           </div>
           <div className="mx-auto grid max-w-[840px] gap-6 md:grid-cols-2">
@@ -507,7 +535,7 @@ function LandingPage() {
                   <li key={f}><span className="lp-flag font-bold">→ </span>{f}</li>
                 ))}
               </ul>
-              <Link to="/onboarding" className="lp-btn lp-btn-primary no-underline">Analyze my company</Link>
+              <Link to="/onboarding" className="lp-btn lp-btn-primary no-underline">Request your invite</Link>
             </div>
             <div className="lp-rise lp-ink lp-mock lp-halftone p-8">
               <p className="lp-kick" style={{ color: 'var(--c-butter)' }}>Report pack</p>
@@ -519,11 +547,16 @@ function LandingPage() {
                 need it, straight from the app.
               </p>
               <ul className="my-6 grid gap-2.5 text-[0.92rem]">
-                {['10 full scored reports', 'Every report covers revenue + 6 more factors', 'Consulting hand-off when you want a human', 'UPI, cards & netbanking via Razorpay'].map((f) => (
+                {[
+                  '10 full scored reports',
+                  'Every report covers revenue + 6 more factors',
+                  'Escalate to a Revižor engagement when the diagnosis calls for it',
+                  'UPI, cards & netbanking via Razorpay',
+                ].map((f) => (
                   <li key={f}><span className="font-bold" style={{ color: 'var(--c-butter)' }}>→ </span>{f}</li>
                 ))}
               </ul>
-              <Link to="/onboarding" className="lp-btn lp-btn-accent no-underline">Get started</Link>
+              <Link to="/onboarding" className="lp-btn lp-btn-accent no-underline">Request your invite</Link>
             </div>
           </div>
         </div>
@@ -540,7 +573,7 @@ function LandingPage() {
             them and find out.
           </p>
           <Link to="/onboarding" className="lp-rise lp-btn lp-btn-primary no-underline">
-            <UploadCloud size={19} /> Start your analysis — free
+            <UploadCloud size={19} /> Request your invite — free
           </Link>
         </div>
       </section>
@@ -562,17 +595,11 @@ function LandingPage() {
                 advisor that answers from your own files.
               </p>
             </div>
-            {(
-              [
-                ['Product', ['How it works', 'The advisor', 'What you get', 'Pricing']],
-                ['Company', ['About', 'Security', 'Contact']],
-                ['Start', ['Analyze my company', 'Sign in']],
-              ] as const
-            ).map(([h, links]) => (
+            {FOOTER_COLS.map(([h, links]) => (
               <div key={h}>
                 <h4 className="lp-kick mb-4 text-[0.66rem]" style={{ color: 'var(--ink-soft)' }}>{h}</h4>
                 {links.map((l) => (
-                  <a key={l} href="#top" className="block py-1 text-[0.92rem]" style={{ color: 'var(--ink)', opacity: 0.82 }}>{l}</a>
+                  <a key={l.label} href={l.href} className="block py-1 text-[0.92rem]" style={{ color: 'var(--ink)', opacity: 0.82 }}>{l.label}</a>
                 ))}
               </div>
             ))}
