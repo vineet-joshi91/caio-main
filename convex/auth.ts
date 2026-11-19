@@ -81,32 +81,14 @@ export const deleteAuthForEmail = mutation({
     if (token !== "caio-bootstrap-2026") {
       throw new ConvexError("INVALID_TOKEN");
     }
-
     const normalizedEmail = email.trim().toLowerCase();
-
-    // Delete from users (by email index)
     const users = await ctx.db
       .query("users")
       .withIndex("email", (q) => q.eq("email", normalizedEmail))
       .collect();
     for (const user of users) {
-      // Delete all authAccounts linked to this user (full scan — bootstrap only)
-      const allAccounts = await ctx.db.query("authAccounts").collect();
-      for (const account of allAccounts) {
-        if (account.userId === user._id) {
-          await ctx.db.delete(account._id);
-        }
-      }
-      // Delete all authSessions linked to this user
-      const allSessions = await ctx.db.query("authSessions").collect();
-      for (const session of allSessions) {
-        if (session.userId === user._id) {
-          await ctx.db.delete(session._id);
-        }
-      }
       await ctx.db.delete(user._id);
     }
-
-    return { deleted: { accounts: accounts.length, users: users.length } };
+    return { deleted: users.length };
   },
 });
