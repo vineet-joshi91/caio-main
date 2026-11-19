@@ -84,21 +84,20 @@ export const deleteAuthForEmail = mutation({
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // Delete from authAccounts
-    const accounts = await ctx.db
-      .query("authAccounts")
-      .filter((q) => q.eq(q.field("providerAccountId"), normalizedEmail))
-      .collect();
-    for (const account of accounts) {
-      await ctx.db.delete(account._id);
-    }
-
-    // Delete from users
+    // Delete from users (by email index)
     const users = await ctx.db
       .query("users")
       .withIndex("email", (q) => q.eq("email", normalizedEmail))
       .collect();
     for (const user of users) {
+      // Delete all authAccounts linked to this user
+      const accounts = await ctx.db
+        .query("authAccounts")
+        .withIndex("userIdAndProvider", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const account of accounts) {
+        await ctx.db.delete(account._id);
+      }
       await ctx.db.delete(user._id);
     }
 
