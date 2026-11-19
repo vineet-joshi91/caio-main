@@ -1,7 +1,7 @@
 import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 import { ConvexError, v } from "convex/values";
-import { action } from "./_generated/server";
+import { action, mutation } from "./_generated/server";
 import { api } from "./_generated/api";
 
 export const {
@@ -21,17 +21,6 @@ export const {
         }
 
         return { email };
-      },
-      // Log reset codes to Convex dashboard (no email provider configured yet)
-      async generateVerificationToken() {
-        return Math.floor(100000 + Math.random() * 900000).toString();
-      },
-      async sendVerificationRequest({ identifier: email, token, provider }) {
-        // Until an email provider is wired up, the code is logged to Convex
-        // dashboard → Logs. Search for "CAIO password reset" to find it.
-        console.log(
-          `CAIO password reset for ${email} — code: ${token}`
-        );
       },
     }),
   ],
@@ -77,5 +66,42 @@ export const signIn = action({
 
       throw new ConvexError(code);
     }
+  },
+});
+
+/**
+ * ONE-TIME BOOTSTRAP: Delete auth records for an email so the owner can
+ * re-register with a new password. Protected by a hardcoded secret token.
+ * Call from browser console:
+ *   await convex.mutation("auth:deleteAuthForEmail", { email: "you@example.com", token: "caio-bootstrap-2026" })
+ */
+export const deleteAuthForEmail = mutation({
+  args: { email: v.string(), token: v.string() },
+  handler: async (ctx, { email, token }) => {
+    if (token !== "caio-bootstrap-2026") {
+      throw new ConvexError("INVALID_TOKEN");
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Delete from authAccounts
+    const accounts = await ctx.db
+      .query("authAccounts")
+      .filter((q) => q.eq(q.field("providerAccountId"), normalizedEmail))
+      .collect();
+    for (const account of accounts) {
+      await ctx.db.delete(account._id);
+    }
+
+    // Delete from users
+    const users = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", normalizedEmail))
+      .collect();
+    for (const user of users) {
+      await ctx.db.delete(user._id);
+    }
+
+    return { deleted: { accounts: accounts.length, users: users.length } };
   },
 });
