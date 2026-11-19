@@ -43,12 +43,6 @@ function Authenticated({ children }: { children: ReactNode }) {
   return children
 }
 
-/**
- * `convex/auth.ts` re-throws known credential failures as a `ConvexError`
- * carrying a stable code, because Convex redacts plain `Error` messages in
- * production to an opaque "Server Error". The `mode` fallback keeps the copy
- * useful if a failure ever arrives without a code (older deploy, real outage).
- */
 function authErrorMessage(caught: unknown, mode: 'signIn' | 'signUp') {
   const code = caught instanceof ConvexError ? String(caught.data) : null
 
@@ -70,13 +64,23 @@ function authErrorMessage(caught: unknown, mode: 'signIn' | 'signUp') {
     : 'Could not create the account. That email may already be registered — try signing in instead.'
 }
 
+type Screen = 'signIn' | 'signUp' | 'resetRequest' | 'resetConfirm'
+
 function AuthScreen() {
   const { signIn } = useAuthActions()
-  const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn')
+  const [screen, setScreen] = useState<Screen>('signIn')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
+
+  function resetForm() {
+    setError(null)
+    setPassword('')
+    setCode('')
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -84,18 +88,157 @@ function AuthScreen() {
     setSubmitting(true)
 
     try {
-      await signIn('password', {
-        email: email.trim().toLowerCase(),
-        password,
-        flow: mode,
-      })
+      if (screen === 'signIn' || screen === 'signUp') {
+        await signIn('password', {
+          email: email.trim().toLowerCase(),
+          password,
+          flow: screen,
+        })
+      } else if (screen === 'resetRequest') {
+        // Send reset code to email
+        await signIn('password', {
+          email: email.trim().toLowerCase(),
+          flow: 'reset',
+        })
+        setResetSent(true)
+        setScreen('resetConfirm')
+      } else if (screen === 'resetConfirm') {
+        // Submit code + new password
+        await signIn('password', {
+          email: email.trim().toLowerCase(),
+          code,
+          newPassword: password,
+          flow: 'reset-verification',
+        })
+      }
     } catch (caught) {
-      setError(authErrorMessage(caught, mode))
+      if (screen === 'signIn' || screen === 'signUp') {
+        setError(authErrorMessage(caught, screen))
+      } else {
+        const msg = caught instanceof ConvexError ? String(caught.data) : null
+        setError(
+          msg === 'InvalidCode'
+            ? 'That code is incorrect or expired. Request a new one.'
+            : msg === 'InvalidEmail'
+              ? 'Enter a valid email address.'
+              : 'Something went wrong. Please try again.',
+        )
+      }
     } finally {
       setSubmitting(false)
     }
   }
 
+  // ── Reset request screen ───────────────────────────────────────────────────
+  if (screen === 'resetRequest') {
+    return (
+      <main className="relative grid min-h-screen place-items-center bg-background px-4 py-8">
+        <ThemeToggle className="absolute right-4 top-4" />
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">CAIO</p>
+            <CardTitle className="text-3xl">Reset password</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Enter your email and we'll send a one-time code.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  autoComplete="email"
+                  id="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  type="email"
+                  value={email}
+                />
+              </div>
+              {error && (
+                <p className="border border-destructive bg-background p-3 text-sm text-destructive">{error}</p>
+              )}
+              <Button className="w-full" disabled={submitting} type="submit">
+                {submitting ? 'Sending…' : 'Send reset code'}
+              </Button>
+            </form>
+            <Button
+              className="mt-3 w-full"
+              onClick={() => { resetForm(); setScreen('signIn') }}
+              type="button"
+              variant="ghost"
+            >
+              Back to sign in
+            </Button>
+          </CardContent>
+        </Card>
+      </main>
+    )
+  }
+
+  // ── Reset confirm screen ───────────────────────────────────────────────────
+  if (screen === 'resetConfirm') {
+    return (
+      <main className="relative grid min-h-screen place-items-center bg-background px-4 py-8">
+        <ThemeToggle className="absolute right-4 top-4" />
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">CAIO</p>
+            <CardTitle className="text-3xl">Set new password</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {resetSent
+                ? `A code was sent to ${email}. Enter it below with your new password.`
+                : 'Enter the code from your email and choose a new password.'}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="code">Reset code</Label>
+                <Input
+                  autoComplete="one-time-code"
+                  id="code"
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="6-digit code"
+                  required
+                  type="text"
+                  value={code}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">New password</Label>
+                <Input
+                  autoComplete="new-password"
+                  id="password"
+                  minLength={8}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  type="password"
+                  value={password}
+                />
+              </div>
+              {error && (
+                <p className="border border-destructive bg-background p-3 text-sm text-destructive">{error}</p>
+              )}
+              <Button className="w-full" disabled={submitting} type="submit">
+                {submitting ? 'Saving…' : 'Set new password'}
+              </Button>
+            </form>
+            <Button
+              className="mt-3 w-full"
+              onClick={() => { resetForm(); setScreen('resetRequest') }}
+              type="button"
+              variant="ghost"
+            >
+              Resend code
+            </Button>
+          </CardContent>
+        </Card>
+      </main>
+    )
+  }
+
+  // ── Sign in / Sign up screen ───────────────────────────────────────────────
   return (
     <main className="relative grid min-h-screen place-items-center bg-background px-4 py-8">
       <ThemeToggle className="absolute right-4 top-4" />
@@ -105,7 +248,7 @@ function AuthScreen() {
             CAIO
           </p>
           <CardTitle className="text-3xl">
-            {mode === 'signIn' ? 'Sign in' : 'Create account'}
+            {screen === 'signIn' ? 'Sign in' : 'Create account'}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Use Convex Auth to access your isolated business workspace.
@@ -127,9 +270,7 @@ function AuthScreen() {
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
-                autoComplete={
-                  mode === 'signIn' ? 'current-password' : 'new-password'
-                }
+                autoComplete={screen === 'signIn' ? 'current-password' : 'new-password'}
                 id="password"
                 minLength={8}
                 onChange={(event) => setPassword(event.target.value)}
@@ -146,7 +287,7 @@ function AuthScreen() {
             <Button className="w-full" disabled={submitting} type="submit">
               {submitting
                 ? 'Working...'
-                : mode === 'signIn'
+                : screen === 'signIn'
                   ? 'Sign in'
                   : 'Sign up'}
             </Button>
@@ -154,16 +295,26 @@ function AuthScreen() {
           <Button
             className="mt-3 w-full"
             onClick={() => {
-              setError(null)
-              setMode(mode === 'signIn' ? 'signUp' : 'signIn')
+              resetForm()
+              setScreen(screen === 'signIn' ? 'signUp' : 'signIn')
             }}
             type="button"
             variant="ghost"
           >
-            {mode === 'signIn'
+            {screen === 'signIn'
               ? 'Need an account? Sign up'
               : 'Already have an account? Sign in'}
           </Button>
+          {screen === 'signIn' && (
+            <Button
+              className="mt-1 w-full text-muted-foreground"
+              onClick={() => { resetForm(); setScreen('resetRequest') }}
+              type="button"
+              variant="ghost"
+            >
+              Forgot password?
+            </Button>
+          )}
         </CardContent>
       </Card>
     </main>
