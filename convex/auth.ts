@@ -90,13 +90,19 @@ export const deleteAuthForEmail = mutation({
       .withIndex("email", (q) => q.eq("email", normalizedEmail))
       .collect();
     for (const user of users) {
-      // Delete all authAccounts linked to this user
-      const accounts = await ctx.db
-        .query("authAccounts")
-        .withIndex("userIdAndProvider", (q) => q.eq("userId", user._id))
-        .collect();
-      for (const account of accounts) {
-        await ctx.db.delete(account._id);
+      // Delete all authAccounts linked to this user (full scan — bootstrap only)
+      const allAccounts = await ctx.db.query("authAccounts").collect();
+      for (const account of allAccounts) {
+        if (account.userId === user._id) {
+          await ctx.db.delete(account._id);
+        }
+      }
+      // Delete all authSessions linked to this user
+      const allSessions = await ctx.db.query("authSessions").collect();
+      for (const session of allSessions) {
+        if (session.userId === user._id) {
+          await ctx.db.delete(session._id);
+        }
       }
       await ctx.db.delete(user._id);
     }
