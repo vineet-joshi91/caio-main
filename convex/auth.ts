@@ -6,8 +6,6 @@ import { api } from "./_generated/api";
 
 export const {
   auth,
-  // Exported under a non-default name so the `signIn` below can wrap it. The
-  // client only ever calls `signIn`.
   signIn: rawSignIn,
   signOut,
   store,
@@ -24,21 +22,21 @@ export const {
 
         return { email };
       },
+      // Log reset codes to Convex dashboard (no email provider configured yet)
+      async generateVerificationToken() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+      },
+      async sendVerificationRequest({ identifier: email, token, provider }) {
+        // Until an email provider is wired up, the code is logged to Convex
+        // dashboard → Logs. Search for "CAIO password reset" to find it.
+        console.log(
+          `CAIO password reset for ${email} — code: ${token}`
+        );
+      },
     }),
   ],
 });
 
-/**
- * Convex redacts plain `Error` messages in production, replacing them with an
- * opaque "Server Error". Convex Auth signals every credential failure with a
- * plain `Error` ("InvalidSecret", "InvalidAccountId", "Account <email> already
- * exists"), so without this the browser cannot tell a wrong password from a
- * missing account from a genuine backend outage.
- *
- * `ConvexError.data` is *not* redacted, so we re-throw the known failures with
- * a stable code the client can branch on. Anything unrecognised is left alone
- * — a real server fault should keep looking like one.
- */
 function authErrorCode(error: unknown): string | null {
   const message = error instanceof Error ? error.message : String(error);
 
@@ -47,6 +45,7 @@ function authErrorCode(error: unknown): string | null {
   if (message.includes("already exists")) return "AccountExists";
   if (message.includes("Invalid password")) return "WeakPassword";
   if (message.includes("A valid email address is required")) return "InvalidEmail";
+  if (message.includes("InvalidCode")) return "InvalidCode";
 
   return null;
 }
